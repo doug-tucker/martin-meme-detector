@@ -15,11 +15,14 @@ import sx.blah.discord.util.MissingPermissionsException;
 public class MartinPostedPictureEventLisener {
     @EventSubscriber
     public void onMeme(MartinPostedPictureEvent event) throws HTTP429Exception, DiscordException, MissingPermissionsException {
+        // incrememnt our global meme/Drake counters
         int currentMemeCount = Main.memeCounter.incrementAndGet();
         int drakeCount = Main.drakeCounter.get();
         if (event.isDrake()) {
             drakeCount = Main.drakeCounter.incrementAndGet();
         }
+
+        // build and send our reply
         String wittyRemark = WittyRemarks.getRandomRemark();
 
         String outboundMessage = "Sick " +

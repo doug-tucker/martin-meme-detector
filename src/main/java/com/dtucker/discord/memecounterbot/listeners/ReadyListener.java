@@ -9,7 +9,7 @@ import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.HTTP429Exception;
 
 /**
- * Created by doug on 6/9/16.
+ * A simple event that's thrown to let our app know that we are ready to go (logged in to server, etc).
  */
 public class ReadyListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReadyListener.class);
