@@ -51,12 +51,14 @@ public class MessageScraper {
             return false;
         }
         LOGGER.debug("It was Martin!");
+
+        // Martin usually posts memes by uploading them directly, and this will capture those
         final List<IMessage.Attachment> attachments = message.getAttachments();
         if (attachments != null && !attachments.isEmpty()) {
             LOGGER.info("aww shit, Martin posted at least one attachment!");
             for (IMessage.Attachment attachment : attachments) {
                 // let's look for clues
-                final String contentType = isAttachmentImageShallowCheck(attachment);
+                final String contentType = isAttachmentImageShallowCheck(attachment.getFilename());
                 if (contentType.startsWith("image")) {
                     // ok, at this point, we are pretty sure he posted a meme.
                     final boolean isDrake = attachment.getFilename().toLowerCase().contains("drake");
@@ -65,6 +67,25 @@ public class MessageScraper {
                 }
             }
         }
+
+        // but maybe sometimes he gets lazy and copy/pastes a link. let's handle that as well
+        // check to see if he posted a link somewhere in the message
+        // TODO generify code to match code above
+        for (String word : message.getContent().split(" ")) {
+            // is this word a URL?
+            if (word.toLowerCase().startsWith("http")) {
+                // he posted a link! let's see if it was a meme or not. grab the filename from the URL and check
+                String filename = word.substring(word.lastIndexOf("/"));
+                final String contentType = isAttachmentImageShallowCheck(filename);
+                if (contentType.startsWith("image")) {
+                    // ok, at this point, we are pretty sure he posted a meme.
+                    final boolean isDrake = filename.toLowerCase().contains("drake");
+                    event.getClient().getDispatcher().dispatch(new MartinPostedPictureEvent(message, isDrake));
+                    return true;
+                }
+            }
+        }
+
         // If we are here, then Martin posted a boring old non-meme post. :(
         return false;
     }
@@ -87,11 +108,11 @@ public class MessageScraper {
     /**
      * This method takes the filename and attempts to guess what type of file it is based solely on name. No HTTP calls
      * made here.
-     * @param attachment attachment in question
+     * @param filename
      * @return HTTP-like syntax of content type (ex: "text/html", "image/jpeg")
      * @throws IOException
      */
-    private String isAttachmentImageShallowCheck(IMessage.Attachment attachment) throws IOException {
-        return URLConnection.guessContentTypeFromName(attachment.getFilename());
+    private String isAttachmentImageShallowCheck(String filename) throws IOException {
+        return URLConnection.guessContentTypeFromName(filename);
     }
 }

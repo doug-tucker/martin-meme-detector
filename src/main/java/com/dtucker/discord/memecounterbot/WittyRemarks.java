@@ -12,6 +12,8 @@ public class WittyRemarks {
             "Really, this shit again?",
             "ANOTHA ONE",
             "That's enough for today...",
+            "OH MY GOD YOUR MOM IS VACUUMING AGAIN WTF!",
+            "get back to vacuuming bro",
     };
 
     /**
