@@ -18,6 +18,10 @@ public class Main {
     protected static String BOT_TOKEN = "";
 
     public static IDiscordClient client;
+
+    // use Atomic versions of these since we are working with an asynchronous event-based framework. This ensures they
+    // don't stomp on top of each other if Martin simultaneously posts multiple memes. Highly unlikely, but will be
+    // useful if we expand to multiple users later.
     public static AtomicInteger memeCounter = new AtomicInteger(0);
     public static AtomicInteger drakeCounter = new AtomicInteger(0);
 
@@ -42,5 +46,7 @@ public class Main {
         client.getDispatcher().registerListener(new MartinPostedPictureEventLisener());
 
         LOGGER.debug("All listeners have been registered.");
+
+        // program continues to run until killed manually
     }
 }
