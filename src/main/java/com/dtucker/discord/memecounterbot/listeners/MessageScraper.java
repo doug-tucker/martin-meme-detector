@@ -19,6 +19,7 @@ public class MessageScraper {
     public static final Logger LOGGER = LoggerFactory.getLogger(MessageScraper.class);
 
     public static final String MARTIN_ID = "190621241869074433";
+    public static final String DOUG_ID = "175414741798354944";
 
     /**
      * This method is intended to check mesages for certain content. If the message fulfils a certain requirement, early
@@ -55,9 +56,7 @@ public class MessageScraper {
             LOGGER.info("aww shit, Martin posted at least one attachment!");
             for (IMessage.Attachment attachment : attachments) {
                 // let's look for clues
-                final URL attachmentURL = new URL(attachment.getUrl());
-                final URLConnection connection = attachmentURL.openConnection();
-                final String contentType = URLConnection.guessContentTypeFromStream(connection.getInputStream());
+                final String contentType = isAttachmentImageShallowCheck(attachment);
                 if (contentType.startsWith("image")) {
                     // ok, at this point, we are pretty sure he posted a meme.
                     final boolean isDrake = attachment.getFilename().toLowerCase().contains("drake");
@@ -68,5 +67,31 @@ public class MessageScraper {
         }
         // If we are here, then Martin posted a boring old non-meme post. :(
         return false;
+    }
+
+    /**
+     * This method attempts to make a connection to wherever the image is hosted, download it, and analyze it.
+     *
+     * NOTE: THIS THROWS A 403 WHEN HOSTED ON DISCORD. TODO fix this cause this would be more accurate
+     *
+     * @param attachment attachment in question
+     * @return HTTP-like syntax of content type (ex: "text/html", "image/jpeg")
+     * @throws IOException
+     */
+    private String isAttachmentImageDeepCheck(IMessage.Attachment attachment) throws IOException {
+        final URL attachmentURL = new URL(attachment.getUrl());
+        final URLConnection connection = attachmentURL.openConnection();
+        return URLConnection.guessContentTypeFromStream(connection.getInputStream());
+    }
+
+    /**
+     * This method takes the filename and attempts to guess what type of file it is based solely on name. No HTTP calls
+     * made here.
+     * @param attachment attachment in question
+     * @return HTTP-like syntax of content type (ex: "text/html", "image/jpeg")
+     * @throws IOException
+     */
+    private String isAttachmentImageShallowCheck(IMessage.Attachment attachment) throws IOException {
+        return URLConnection.guessContentTypeFromName(attachment.getFilename());
     }
 }
