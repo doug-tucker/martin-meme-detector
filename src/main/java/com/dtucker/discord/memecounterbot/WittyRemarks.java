@@ -14,6 +14,9 @@ public class WittyRemarks {
             "That's enough for today...",
             "OH MY GOD YOUR MOM IS VACUUMING AGAIN WTF!",
             "get back to vacuuming bro",
+            "So. Fucking. Dank.",
+            "Dank tank memes steamrolling the chat, broh!",
+            "We've seen that picture a million times now, Martin...",
     };
 
     /**

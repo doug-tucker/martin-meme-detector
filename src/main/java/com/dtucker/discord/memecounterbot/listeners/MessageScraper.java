@@ -1,5 +1,7 @@
 package com.dtucker.discord.memecounterbot.listeners;
 
+import com.dtucker.discord.memecounterbot.events.BotCommandEvent;
+import com.dtucker.discord.memecounterbot.events.BotMentionedEvent;
 import com.dtucker.discord.memecounterbot.events.MartinPostedPictureEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,20 +22,30 @@ public class MessageScraper {
 
     public static final String MARTIN_ID = "190621241869074433";
     public static final String DOUG_ID = "175414741798354944";
+    public static final String BOT_ID = "190668073462661128";
 
     /**
-     * This method is intended to check mesages for certain content. If the message fulfils a certain requirement, early
+     * This method is intended to check messages for certain content. If the message fulfils a certain requirement, early
      * return after that (to save cycles).
      * @param event event object containing the message and other useful info.
      * @throws IOException
      */
     @EventSubscriber
     public void onMessagePosted(MessageReceivedEvent event) throws IOException {
+        // first, check if Martin posted a meme!
         if (martinMemeCheck(event)) {
             return;
         }
 
+        // look for a command event
+        if (commandCheck(event)) {
+            return;
+        }
+
         // next, check to see if someone called us out to handle a command or talk shit (future functionality here)
+        if (calloutCheck(event)) {
+            return;
+        }
     }
 
     /**
@@ -114,5 +126,32 @@ public class MessageScraper {
      */
     private String isAttachmentImageShallowCheck(String filename) throws IOException {
         return URLConnection.guessContentTypeFromName(filename);
+    }
+
+    /**
+     *
+     */
+    private boolean commandCheck(MessageReceivedEvent event) {
+        if (event.getMessage().getContent().startsWith("^")) {
+            LOGGER.info("command maybe? Let's thrown an event and see");
+            event.getClient().getDispatcher().dispatch(new BotCommandEvent(event.getMessage()));
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check to see if we were called out and handle accordingly.
+     * @param event MessageReceivedEvent
+     * @return true if we were called out in this msg!
+     */
+    private boolean calloutCheck(MessageReceivedEvent event) {
+        if (event.getMessage().getContent().contains("<@" + BOT_ID + ">")) {
+            LOGGER.info("the bot has been called out!");
+            event.getClient().getDispatcher().dispatch(new BotMentionedEvent(event.getMessage()));
+            return true;
+        }
+
+        return false;
     }
 }

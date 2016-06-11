@@ -11,14 +11,21 @@ import sx.blah.discord.util.HTTP429Exception;
 /**
  * A simple event that's thrown to let our app know that we are ready to go (logged in to server, etc).
  */
-public class ReadyListener {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ReadyListener.class);
+public class ReadyEventListener {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReadyEventListener.class);
+
+    public static final String [] BOT_NAMES = {
+            "Doug Jr.",
+            "lilpoppa1003",
+            "Martin Meme Counter"
+    };
 
     @EventSubscriber
     public void onReady(ReadyEvent event) {
+        String randomName = BOT_NAMES[((int)System.currentTimeMillis() % BOT_NAMES.length)];
         try {
-            Main.client.changeUsername("Martin Meme Counter");
-            LOGGER.debug("Name change successful.");
+            event.getClient().changeUsername(randomName);
+            LOGGER.debug("Name change successful. Chose: " + randomName);
         } catch (DiscordException | HTTP429Exception e) {
             LOGGER.error("Couldn't change username!", e);
         }
