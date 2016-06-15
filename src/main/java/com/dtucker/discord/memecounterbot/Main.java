@@ -15,6 +15,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Main {
     protected static String BOT_TOKEN = "";
 
+    public static final String COMMAND_PREFIX = "-";
+
     public static IDiscordClient client;
 
     // use Atomic versions of these since we are working with an asynchronous event-based framework. This ensures they

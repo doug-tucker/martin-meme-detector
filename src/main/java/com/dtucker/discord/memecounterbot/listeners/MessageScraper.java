@@ -1,5 +1,6 @@
 package com.dtucker.discord.memecounterbot.listeners;
 
+import com.dtucker.discord.memecounterbot.Main;
 import com.dtucker.discord.memecounterbot.events.BotCommandEvent;
 import com.dtucker.discord.memecounterbot.events.BotMentionedEvent;
 import com.dtucker.discord.memecounterbot.events.MartinPostedPictureEvent;
@@ -58,6 +59,16 @@ public class MessageScraper {
         // first, determine if Martin is the author
         final IMessage message = event.getMessage();
         LOGGER.debug(message.getAuthor().getName() + " just posted a message. ID: " + message.getAuthor().getID());
+
+        // note: for debugging purposes, you can change MARTIN_ID to another user. To get that user's ID, manually enter
+        //       @mention in the chat, then put \ in front of it. it'll then return that user's userID.
+        //
+        // example (inside the discord app, as a human):
+        // - type @name, tab, let it autocomplete, do not send
+        // - add a \ in front of the @ sign
+        // - in the chat, you'll see <@1234> instead of the usual name. the number (1234) is the user ID for that user
+        //
+        // warning: doing this will notify the user!
         if (!MARTIN_ID.equals(message.getAuthor().getID())) {
             // it wasn't Martin. We don't care.
             return false;
@@ -132,8 +143,8 @@ public class MessageScraper {
      *
      */
     private boolean commandCheck(MessageReceivedEvent event) {
-        if (event.getMessage().getContent().startsWith("^")) {
-            LOGGER.info("command maybe? Let's thrown an event and see");
+        if (event.getMessage().getContent().startsWith(Main.COMMAND_PREFIX)) {
+            LOGGER.info("command maybe? Let's throw an event and see");
             event.getClient().getDispatcher().dispatch(new BotCommandEvent(event.getMessage()));
             return true;
         }

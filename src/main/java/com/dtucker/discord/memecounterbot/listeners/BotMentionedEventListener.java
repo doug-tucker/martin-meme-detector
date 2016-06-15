@@ -9,12 +9,12 @@ import sx.blah.discord.util.MessageBuilder;
 import sx.blah.discord.util.MissingPermissionsException;
 
 /**
- * Created by doug on 6/11/16.
+ * Listener that replies to any time our bot is @mentioned
  */
 public class BotMentionedEventListener {
     @EventSubscriber
     public void onMention(BotMentionedEvent event) throws HTTP429Exception, DiscordException, MissingPermissionsException {
-        String outboundMessage = "Don't you sass me, " + event.getMessage().getAuthor().mention() + " !";
+        final String outboundMessage = "Don't you sass me, " + event.getMessage().getAuthor().mention() + " !";
 
         new MessageBuilder(Main.client)
                 .withChannel(event.getMessage().getChannel())
